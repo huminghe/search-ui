@@ -5,10 +5,10 @@ function getTermFilterValue(field, fieldValue) {
 
   // TODO We need better approach for boolean values
   if (fieldValue === "false" || fieldValue === "true") {
-    return { [field]: fieldValue === "true" };
+    return {[field]: fieldValue === "true"};
   }
 
-  return { [`${field}.keyword`]: fieldValue };
+  return {[`${field}`]: fieldValue};
 }
 
 function getTermFilter(filter) {
@@ -39,8 +39,8 @@ function getRangeFilter(filter) {
         should: filter.values.map(filterValue => ({
           range: {
             [filter.field]: {
-              ...(filterValue.to && { lt: filterValue.to }),
-              ...(filterValue.to && { gt: filterValue.from })
+              ...(filterValue.to && {lt: filterValue.to}),
+              ...(filterValue.from && {gt: filterValue.from})
             }
           }
         })),
@@ -53,8 +53,8 @@ function getRangeFilter(filter) {
         filter: filter.values.map(filterValue => ({
           range: {
             [filter.field]: {
-              ...(filterValue.to && { lt: filterValue.to }),
-              ...(filterValue.to && { gt: filterValue.from })
+              ...(filterValue.to && {lt: filterValue.to}),
+              ...(filterValue.from && {gt: filterValue.from})
             }
           }
         }))
@@ -67,10 +67,10 @@ export default function buildRequestFilter(filters) {
   if (!filters) return;
 
   filters = filters.reduce((acc, filter) => {
-    if (["states", "world_heritage_site"].includes(filter.field)) {
+    if (["domain"].includes(filter.field)) {
       return [...acc, getTermFilter(filter)];
     }
-    if (["acres", "visitors"].includes(filter.field)) {
+    if (["publishTime"].includes(filter.field)) {
       return [...acc, getRangeFilter(filter)];
     }
     return acc;

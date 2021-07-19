@@ -1,4 +1,5 @@
 import buildRequestFilter from "./buildRequestFilter";
+import moment from "moment";
 
 function buildFrom(current, resultsPerPage) {
   if (!current || !resultsPerPage) return;
@@ -7,19 +8,19 @@ function buildFrom(current, resultsPerPage) {
 
 function buildSort(sortDirection, sortField) {
   if (sortDirection && sortField) {
-    return [{ [`${sortField}.keyword`]: sortDirection }];
+    return [{[`${sortField}`]: sortDirection}];
   }
 }
 
 function buildMatch(searchTerm) {
   return searchTerm
     ? {
-        multi_match: {
-          query: searchTerm,
-          fields: ["title", "description"]
-        }
+      multi_match: {
+        query: searchTerm,
+        fields: ["title", "contentCleaned", "keywords"]
       }
-    : { match_all: {} };
+    }
+    : {match_all: {}};
 }
 
 /*
@@ -62,44 +63,29 @@ export default function buildRequest(state) {
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-highlighting.html
     highlight: {
       fragment_size: 200,
-      number_of_fragments: 1,
+      number_of_fragments: 5,
       fields: {
         title: {},
-        description: {}
+        keywords: {},
+        contentCleaned: {}
       }
     },
     //https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-source-filtering.html#search-request-source-filtering
-    _source: ["id", "nps_link", "title", "description"],
+    _source: ["id", "url", "title", "contentCleaned", "keywords", "summary", "publishTime", "domain", "processTime"],
     aggs: {
-      states: { terms: { field: "states.keyword", size: 30 } },
-      world_heritage_site: {
-        terms: { field: "world_heritage_site" }
-      },
-      visitors: {
+      domain: {terms: {field: "domain", size: 30}},
+      publishTime: {
         range: {
-          field: "visitors",
+          field: "publishTime",
           ranges: [
-            { from: 0.0, to: 10000.0, key: "0 - 10000" },
-            { from: 10001.0, to: 100000.0, key: "10001 - 100000" },
-            { from: 100001.0, to: 500000.0, key: "100001 - 500000" },
-            { from: 500001.0, to: 1000000.0, key: "500001 - 1000000" },
-            { from: 1000001.0, to: 5000000.0, key: "1000001 - 5000000" },
-            { from: 5000001.0, to: 10000000.0, key: "5000001 - 10000000" },
-            { from: 10000001.0, key: "10000001+" }
+            {from: moment().subtract(1, "days").toISOString(), key: "一日内"},
+            {from: moment().subtract(1, "weeks").toISOString(), key: "一周内"},
+            {from: moment().subtract(1, "months").toISOString(), key: "一个月内"},
+            {from: moment().subtract(1, "quarters").toISOString(), key: "一季度内"},
+            {from: moment().subtract(1, "years").toISOString(), key: "一年内"}
           ]
         }
       },
-      acres: {
-        range: {
-          field: "acres",
-          ranges: [
-            { from: -1.0, key: "Any" },
-            { from: 0.0, to: 1000.0, key: "Small" },
-            { from: 1001.0, to: 100000.0, key: "Medium" },
-            { from: 100001.0, key: "Large" }
-          ]
-        }
-      }
     },
 
     // Dynamic values based on current Search UI state
@@ -108,14 +94,14 @@ export default function buildRequest(state) {
     query: {
       bool: {
         must: [match],
-        ...(filter && { filter })
+        ...(filter && {filter})
       }
     },
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-sort.html
-    ...(sort && { sort }),
+    ...(sort && {sort}),
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-from-size.html
-    ...(size && { size }),
-    ...(from && { from })
+    ...(size && {size}),
+    ...(from && {from})
   };
 
   return body;
