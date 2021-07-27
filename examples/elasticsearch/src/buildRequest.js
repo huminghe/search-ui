@@ -57,7 +57,7 @@ export default function buildRequest(state) {
   const from = buildFrom(current, resultsPerPage);
   const filter = buildRequestFilter(filters);
 
-  const body = {
+  const body = searchTerm ? {
     // Static query Configuration
     // --------------------------
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-highlighting.html
@@ -71,9 +71,23 @@ export default function buildRequest(state) {
       }
     },
     //https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-source-filtering.html#search-request-source-filtering
-    _source: ["id", "url", "title", "contentCleaned", "keywords", "summary", "publishTime", "domain", "processTime"],
+    _source: ["id", "url", "title", "contentCleaned", "keywords", "summary", "publishTime", "domain", "processTime", "domainName", "level"],
+    min_score: 3,
+    collapse: {
+      field: "title.keyword"
+    },
     aggs: {
-      domain: {terms: {field: "domain", size: 30}},
+      domainName: {terms: {field: "domainName.keyword", size: 30}},
+      keywords: {terms: {field: "keywords.keyword", size: 50}},
+      level: {
+        range: {
+          field: "level",
+          ranges: [
+            {to: 1, key: "普通"},
+            {from: 1, key: "重要"}
+          ]
+        }
+      },
       publishTime: {
         range: {
           field: "publishTime",
@@ -82,7 +96,67 @@ export default function buildRequest(state) {
             {from: moment().subtract(1, "weeks").toISOString(), key: "一周内"},
             {from: moment().subtract(1, "months").toISOString(), key: "一个月内"},
             {from: moment().subtract(1, "quarters").toISOString(), key: "一季度内"},
-            {from: moment().subtract(1, "years").toISOString(), key: "一年内"}
+            {from: moment().subtract(1, "years").toISOString(), key: "一年内"},
+            {key: "所有时间"}
+          ]
+        }
+      },
+    },
+
+    // Dynamic values based on current Search UI state
+    // --------------------------
+    // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/full-text-queries.html
+    query: {
+      bool: {
+        must: [match],
+        ...(filter && {filter})
+      }
+    },
+    // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-sort.html
+    ...(sort && {sort}),
+    // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-from-size.html
+    ...(size && {size}),
+    ...(from && {from})
+  } : {
+    // Static query Configuration
+    // --------------------------
+    // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-highlighting.html
+    highlight: {
+      fragment_size: 200,
+      number_of_fragments: 5,
+      fields: {
+        title: {},
+        keywords: {},
+        contentCleaned: {}
+      }
+    },
+    //https://www.elastic.co/guide/en/elasticsearch/reference/7.x/search-request-source-filtering.html#search-request-source-filtering
+    _source: ["id", "url", "title", "contentCleaned", "keywords", "summary", "publishTime", "domain", "processTime", "domainName", "level"],
+    collapse: {
+      field: "title.keyword"
+    },
+    aggs: {
+      domainName: {terms: {field: "domainName.keyword", size: 30}},
+      keywords: {terms: {field: "keywords.keyword", size: 50}},
+      level: {
+        range: {
+          field: "level",
+          ranges: [
+            {to: 1, key: "普通"},
+            {from: 1, key: "重要"}
+          ]
+        }
+      },
+      publishTime: {
+        range: {
+          field: "publishTime",
+          ranges: [
+            {from: moment().subtract(1, "days").toISOString(), key: "一日内"},
+            {from: moment().subtract(1, "weeks").toISOString(), key: "一周内"},
+            {from: moment().subtract(1, "months").toISOString(), key: "一个月内"},
+            {from: moment().subtract(1, "quarters").toISOString(), key: "一季度内"},
+            {from: moment().subtract(1, "years").toISOString(), key: "一年内"},
+            {key: "所有时间"}
           ]
         }
       },

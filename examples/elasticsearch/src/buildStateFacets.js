@@ -45,11 +45,15 @@ function getRangeFacet(aggregations, fieldName) {
 }
 
 export default function buildStateFacets(aggregations) {
-  const domain = getValueFacet(aggregations, "domain");
+  const domainName = getValueFacet(aggregations, "domainName");
   const publishTime = getRangeFacet(aggregations, "publishTime");
+  const keywords = getValueFacet(aggregations, "keywords");
+  const level = getRangeFacet(aggregations, "level");
 
   const facets = {
-    ...(domain && {domain}),
+    ...(domainName && {domainName}),
+    ...(level && {level}),
+    ...(keywords && {keywords}),
     ...(publishTime && {publishTime})
   };
 

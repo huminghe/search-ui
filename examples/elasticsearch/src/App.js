@@ -47,7 +47,7 @@ const config = {
     const responseJsonWithDisjunctiveFacetCounts = await applyDisjunctiveFaceting(
       responseJson,
       state,
-      ["domain", "publishTime"]
+      ["domainName", "publishTime", "level", "keywords"]
     );
     return buildState(responseJsonWithDisjunctiveFacetCounts, resultsPerPage);
   }
@@ -73,8 +73,8 @@ export default function App() {
                       autocompleteResults={{
                         linkTarget: "_blank",
                         sectionTitle: "Results",
-                        titleField: "title",
-                        urlField: "url",
+                        titleField: "标题",
+                        urlField: "链接",
                         shouldTrackClickThrough: true,
                         clickThroughTags: ["test"]
                       }}
@@ -85,7 +85,7 @@ export default function App() {
                     <div>
                       {wasSearched && (
                         <Sorting
-                          label={"Sort by"}
+                          label={"排序方式"}
                           sortOptions={[
                             {
                               name: "相关性",
@@ -106,19 +106,27 @@ export default function App() {
                         />
                       )}
                       <Facet
-                        field="domain"
-                        label="domain"
+                        field="domainName"
+                        label="来源"
                         filterType="any"
                         isFilterable={true}
                         view={MultiCheckboxFacet}
                       />
-                      <Facet field="publishTime" label="发布时间" filterType="any" view={SingleSelectFacet}/>
+                      <Facet field="publishTime" label="发布时间" filterType="any" view={SingleSelectFacet} show={8}/>
+                      <Facet
+                        field="keywords"
+                        lebel="关键词"
+                        filterType="any"
+                        isFilterable={true}
+                        view={MultiCheckboxFacet}
+                      />
+                      <Facet field="level" label="级别" filterType="any" view={MultiCheckboxFacet} show={3}/>
                     </div>
                   }
                   bodyContent={
                     <Results
-                      titleField="title"
-                      urlField="url"
+                      titleField="标题"
+                      urlField="链接"
                       shouldTrackClickThrough={true}
                     />
                   }

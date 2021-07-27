@@ -8,7 +8,7 @@ function getTermFilterValue(field, fieldValue) {
     return {[field]: fieldValue === "true"};
   }
 
-  return {[`${field}`]: fieldValue};
+  return {[`${field}.keyword`]: fieldValue};
 }
 
 function getTermFilter(filter) {
@@ -40,7 +40,7 @@ function getRangeFilter(filter) {
           range: {
             [filter.field]: {
               ...(filterValue.to && {lt: filterValue.to}),
-              ...(filterValue.from && {gt: filterValue.from})
+              ...(filterValue.from && {gte: filterValue.from})
             }
           }
         })),
@@ -54,7 +54,7 @@ function getRangeFilter(filter) {
           range: {
             [filter.field]: {
               ...(filterValue.to && {lt: filterValue.to}),
-              ...(filterValue.from && {gt: filterValue.from})
+              ...(filterValue.from && {gte: filterValue.from})
             }
           }
         }))
@@ -67,10 +67,10 @@ export default function buildRequestFilter(filters) {
   if (!filters) return;
 
   filters = filters.reduce((acc, filter) => {
-    if (["domain"].includes(filter.field)) {
+    if (["domainName", "keywords"].includes(filter.field)) {
       return [...acc, getTermFilter(filter)];
     }
-    if (["publishTime"].includes(filter.field)) {
+    if (["publishTime", "level"].includes(filter.field)) {
       return [...acc, getRangeFilter(filter)];
     }
     return acc;

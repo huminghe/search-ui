@@ -1,4 +1,5 @@
 import buildStateFacets from "./buildStateFacets";
+import moment from "moment";
 
 function buildTotalPages(resultsPerPage, totalResults) {
   if (!resultsPerPage) return 0;
@@ -10,21 +11,32 @@ function buildTotalResults(hits) {
   return hits.total.value;
 }
 
-function getHighlight(hit, fieldName) {
-  if (hit._source.title === "Rocky Mountain" && fieldName === "title") {
-    window.hit = hit;
-    window.fieldName = fieldName;
+function getHighlight(hit, fieldName, index) {
+  if (fieldName === "publishTime") {
+    return moment(parseInt(hit._source[fieldName])).format("YYYY-MM-DD HH:mm:ss");
+  }
+  if (fieldName === "id") {
+    return index.toString();
+  }
+  if (fieldName === "keywords" || fieldName === "summary") {
+    return hit._source[fieldName].join(", ");
   }
   if (
     !hit.highlight ||
     !hit.highlight[fieldName] ||
     hit.highlight[fieldName].length < 1
   ) {
+    if (fieldName === "contentCleaned") {
+      return hit._source[fieldName].substring(0, 300).concat("...");
+    }
     return;
   }
 
   return hit.highlight[fieldName][0];
 }
+
+const sortList= ["id", "publishTime", "title", "contentCleaned", "keywords", "summary", "domainName", "url"]
+const chineseList = ["id", "发布时间", "标题", "内容", "关键词", "摘要", "来源", "链接"]
 
 function buildResults(hits) {
   const addEachKeyValueToObject = (acc, [key, value]) => ({
@@ -36,11 +48,13 @@ function buildResults(hits) {
     return { raw: value, ...(snippet && { snippet }) };
   };
 
-  return hits.map(record => {
+  return hits.map((record, index) => {
     return Object.entries(record._source)
+      .filter(([fieldName, fieldValue]) => sortList.includes(fieldName))
+      .sort(([fa, faa], [fb, fbb]) => sortList.indexOf(fa) - sortList.indexOf(fb))
       .map(([fieldName, fieldValue]) => [
-        fieldName,
-        toObject(fieldValue, getHighlight(record, fieldName))
+        chineseList[sortList.indexOf(fieldName)],
+        toObject(fieldValue, getHighlight(record, fieldName, index))
       ])
       .reduce(addEachKeyValueToObject, {});
   });
