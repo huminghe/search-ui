@@ -59,7 +59,6 @@ export default function App() {
       <div className="App-header" align="center">
         <img src={logo} className="App-logo" alt="logo" height={200} width={750}/>
       </div>
-      <p></p>
       <SearchProvider config={config}>
         <WithSearch mapContextToProps={({wasSearched}) => ({wasSearched})}>
           {({wasSearched}) => (
