@@ -78,7 +78,7 @@ export default function buildRequest(state) {
     },
     aggs: {
       domainName: {terms: {field: "domainName.keyword", size: 30}},
-      keywords: {terms: {field: "keywords.keyword", size: 50}},
+      keywords: {terms: {field: "keywords.keyword", size: 100}},
       level: {
         range: {
           field: "level",
@@ -137,7 +137,7 @@ export default function buildRequest(state) {
     },
     aggs: {
       domainName: {terms: {field: "domainName.keyword", size: 30}},
-      keywords: {terms: {field: "keywords.keyword", size: 50}},
+      keywords: {terms: {field: "keywords.keyword", size: 100}},
       level: {
         range: {
           field: "level",

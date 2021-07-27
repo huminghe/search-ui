@@ -1,5 +1,5 @@
 import React from "react";
-import logo from './logo.svg';
+import logo from './logo.png';
 
 import {
   ErrorBoundary,
@@ -57,8 +57,7 @@ export default function App() {
   return (
     <div className="App">
       <div className="App-header" align="center">
-        <img src={logo} className="App-logo" alt="logo" height={100} width={100}/>
-        <h2 align="center">国网高培中心知识萃取平台</h2>
+        <img src={logo} className="App-logo" alt="logo" height={200} width={750}/>
       </div>
       <p></p>
       <SearchProvider config={config}>
