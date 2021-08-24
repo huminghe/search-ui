@@ -35,6 +35,14 @@ function getHighlight(hit, fieldName, index) {
   return hit.highlight[fieldName][0];
 }
 
+function refineFieldValue(fieldName, fieldValue) {
+  if ((fieldName === "url") && fieldValue.startsWith("/")) {
+    return "http://192.168.20.85:8080/spider/file?type=pdf&filePath=" + fieldValue;
+  } else {
+    return fieldValue;
+  }
+}
+
 const sortList= ["id", "publishTime", "title", "contentCleaned", "keywords", "summary", "domainName", "url"]
 const chineseList = ["id", "发布时间", "标题", "内容", "关键词", "摘要", "来源", "链接"]
 
@@ -54,7 +62,7 @@ function buildResults(hits) {
       .sort(([fa, faa], [fb, fbb]) => sortList.indexOf(fa) - sortList.indexOf(fb))
       .map(([fieldName, fieldValue]) => [
         chineseList[sortList.indexOf(fieldName)],
-        toObject(fieldValue, getHighlight(record, fieldName, index))
+        toObject(refineFieldValue(fieldName, fieldValue), getHighlight(record, fieldName, index))
       ])
       .reduce(addEachKeyValueToObject, {});
   });

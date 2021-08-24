@@ -84,7 +84,8 @@ export default function buildRequest(state) {
           field: "level",
           ranges: [
             {to: 1, key: "普通"},
-            {from: 1, key: "重要"}
+            {from: 1, to: 5, key: "重要"},
+            {from: 10, key: "内部"}
           ]
         }
       },
@@ -143,7 +144,8 @@ export default function buildRequest(state) {
           field: "level",
           ranges: [
             {to: 1, key: "普通"},
-            {from: 1, key: "重要"}
+            {from: 1, to: 5, key: "重要"},
+            {from: 10, key: "内部"}
           ]
         }
       },

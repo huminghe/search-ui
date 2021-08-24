@@ -3,17 +3,20 @@ import logo from './logo.png';
 
 import {
   ErrorBoundary,
-  Facet,
   SearchProvider,
   WithSearch,
-  SearchBox,
-  Results,
   PagingInfo,
-  ResultsPerPage,
   Paging,
   Sorting
 } from "@elastic/react-search-ui";
-import {Layout, MultiCheckboxFacet, SingleSelectFacet} from "@elastic/react-search-ui-views";
+import {
+  ResultsPerPage,
+  SearchBox,
+  Facet,
+  Results
+} from "./container"
+import {Layout} from "@elastic/react-search-ui-views";
+import {MultiCheckboxFacet, SingleSelectFacet} from "./view";
 import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
 import buildRequest from "./buildRequest";
@@ -115,7 +118,7 @@ export default function App() {
                       <Facet field="publishTime" label="发布时间" filterType="any" view={SingleSelectFacet} show={8}/>
                       <Facet
                         field="keywords"
-                        lebel="关键词"
+                        label="关键词"
                         filterType="any"
                         isFilterable={true}
                         view={MultiCheckboxFacet}
@@ -132,7 +135,15 @@ export default function App() {
                   }
                   bodyHeader={
                     <React.Fragment>
-                      {wasSearched && <PagingInfo/>}
+                      {wasSearched && <PagingInfo
+                        view={({ start, end, totalResults }) => (
+                          <div className="paging-info">
+                            <strong>
+                              共 {totalResults} 条结果， 显示第 {start} - {end} 条
+                            </strong>
+                          </div>
+                        )}
+                      />}
                       {wasSearched && <ResultsPerPage/>}
                     </React.Fragment>
                   }
