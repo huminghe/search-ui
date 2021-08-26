@@ -37,8 +37,7 @@ function getHighlight(hit, fieldName, index) {
 
 function refineFieldValue(fieldName, fieldValue) {
   if ((fieldName === "url") && fieldValue.startsWith("/")) {
-    const host = process.env.ELASTICSEARCH_HOST.replaceAll("3000", "8080");
-    return host + "/spider/file?type=pdf&filePath=" + fieldValue;
+    return "http://172.30.2.102:8080/spider/file?type=pdf&filePath=" + fieldValue;
   } else {
     return fieldValue;
   }
