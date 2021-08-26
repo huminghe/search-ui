@@ -37,7 +37,8 @@ function getHighlight(hit, fieldName, index) {
 
 function refineFieldValue(fieldName, fieldValue) {
   if ((fieldName === "url") && fieldValue.startsWith("/")) {
-    return process.env.ELASTICSEARCH_HOST.replaceAll("3000", "8080") + "/spider/file?type=pdf&filePath=" + fieldValue;
+    const host = process.env.ELASTICSEARCH_HOST.replaceAll("3000", "8080");
+    return host + "/spider/file?type=pdf&filePath=" + fieldValue;
   } else {
     return fieldValue;
   }
