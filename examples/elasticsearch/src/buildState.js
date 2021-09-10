@@ -19,7 +19,7 @@ function getHighlight(hit, fieldName, index) {
     return index.toString();
   }
   if (fieldName === "keywords" || fieldName === "summary") {
-    return hit._source[fieldName].join(", ");
+    return hit._source[fieldName].join(" ");
   }
   if (
     !hit.highlight ||

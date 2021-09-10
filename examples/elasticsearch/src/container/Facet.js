@@ -132,7 +132,7 @@ export var FacetContainer = /*#__PURE__*/function (_Component) {
         },
         options: facetValues.slice(0, more),
         showMore: facetValues.length > more,
-        showLess: facetValues.length <= more && more > originShow,
+        showLess: more > originShow,
         values: selectedValues,
         showSearch: isFilterable,
         onSearch: function onSearch(value) {
