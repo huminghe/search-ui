@@ -69,10 +69,21 @@ export class App extends React.Component {
 
   async componentDidMount() {
     let params = this.state.params;
-    const ts = params.get("ts");
-    const tsSign = params.get("tsSign");
-    const accountName = params.get("accountName");
-    cookie.save("accountName", accountName, {path: "/"});
+    let ts = params.get("ts");
+    let tsSign = params.get("tsSign");
+    let accountName = params.get("accountName");
+    if (!ts) {
+      ts = cookie.load("ts");
+    }
+    if (!tsSign) {
+      tsSign = cookie.load("tsSign");
+    }
+    if (!accountName) {
+      accountName = cookie.load("accountName");
+    }
+    cookie.save("ts", ts, {path: "/", maxAge: 600});
+    cookie.save("tsSign", tsSign, {path: "/", maxAge: 600});
+    cookie.save("accountName", accountName, {path: "/", maxAge: 600});
     const returnData = await checkAuth(ts, tsSign);
     this.setState({ts: ts, tsSign: tsSign, returnData: returnData.replaceAll("\"", ""), accountName: accountName});
   }
