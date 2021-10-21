@@ -5,6 +5,7 @@ import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
 import getFile from "./getFile";
 import cookie from "react-cookies";
+import logo from "./logo.png";
 
 export class File extends React.Component {
   constructor(props) {
@@ -23,13 +24,17 @@ export class File extends React.Component {
   }
 
   async componentDidUpdate() {
-    window.close();
+    // window.close();
   }
 
   render() {
     return (
-      <div>
-        <p>${this.state.response}</p>
+      <div className="App">
+        <div className="App-header" align="center">
+          <img src={logo} className="App-logo" alt="logo" height={200} width={750}/>
+        </div>
+        <h1 align="center">{this.state.response}</h1>
+        <h1 align="center">如果被浏览器拦截，请解除拦截～</h1>
       </div>
     )
   }
