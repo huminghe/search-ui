@@ -37,7 +37,7 @@ function getHighlight(hit, fieldName, index) {
 
 function refineFieldValue(fieldName, fieldValue) {
   if ((fieldName === "url") && fieldValue.startsWith("/")) {
-    return "http://172.30.2.102:8080/spider/file?type=pdf&filePath=" + fieldValue;
+    return `/file?filePath=` + fieldValue;
   } else {
     return fieldValue;
   }

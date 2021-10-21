@@ -109,7 +109,19 @@ export default function buildRequest(state) {
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/full-text-queries.html
     query: {
       bool: {
-        must: [match],
+        must: [match,
+          {
+            bool: {
+              should: {
+                range: {
+                  ["publishTime"]: {
+                    lte: moment().toISOString(),
+                    gt: moment().subtract(10, "years").toISOString()
+                  }
+                }
+              }
+            }
+          }],
         ...(filter && {filter})
       }
     },
@@ -169,7 +181,19 @@ export default function buildRequest(state) {
     // https://www.elastic.co/guide/en/elasticsearch/reference/7.x/full-text-queries.html
     query: {
       bool: {
-        must: [match],
+        must: [match,
+          {
+            bool: {
+              should: {
+                range: {
+                  ["publishTime"]: {
+                    lte: moment().toISOString(),
+                    gt: moment().subtract(10, "years").toISOString()
+                  }
+                }
+              }
+            }
+          }],
         ...(filter && {filter})
       }
     },
