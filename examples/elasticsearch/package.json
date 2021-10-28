@@ -43,7 +43,9 @@
     ]
   },
   "devDependencies": {
+    "busboy": "^0.3.1",
     "encoding": "^0.1.12",
+    "form-data": "^2.3.3",
     "netlify-lambda": "^1.5.0",
     "node-fetch": "^2.6.1",
     "npm-run-all": "^4.1.5"
