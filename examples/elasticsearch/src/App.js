@@ -26,6 +26,8 @@ import applyDisjunctiveFaceting from "./applyDisjunctiveFaceting";
 import buildState from "./buildState";
 import checkAuth from "./checkAuth";
 import cookie from "react-cookies";
+import { Upload, message, Button } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 const config = {
   debug: true,
@@ -58,6 +60,9 @@ const config = {
     return buildState(responseJsonWithDisjunctiveFacetCounts, resultsPerPage);
   }
 };
+
+const host = process.env.REACT_APP_ENV === "dev" ? process.env.REACT_APP_BACKEND_HOST_DEV : process.env.REACT_APP_BACKEND_HOST_PROD;
+const uploadApi = `${host}/spider/upload/file`;
 
 export class App extends React.Component {
   constructor(props) {
@@ -97,7 +102,8 @@ export class App extends React.Component {
           <div className="App-header" align="center">
             <img src={logo} className="App-logo" alt="logo" height={200} width={750}/>
           </div>
-          <p></p>
+          <br/>
+          <br/>
           <SearchProvider config={config}>
             <WithSearch mapContextToProps={({wasSearched}) => ({wasSearched})}>
               {({wasSearched}) => (
@@ -188,6 +194,16 @@ export class App extends React.Component {
               )}
             </WithSearch>
           </SearchProvider>
+          <div>
+            <h2>上传文件</h2>
+            <Upload action={uploadApi}>
+              <Button icon={<UploadOutlined />}>点击上传</Button>
+            </Upload>
+            <h2>上传文件夹</h2>
+            <Upload action={uploadApi} directory>
+              <Button icon={<UploadOutlined />}>点击上传</Button>
+            </Upload>
+          </div>
         </div>
       );
     } else {

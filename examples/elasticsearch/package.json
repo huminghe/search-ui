@@ -4,9 +4,11 @@
   "private": true,
   "proxy": "http://localhost:9000",
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@elastic/react-search-ui": "1.7.0",
     "@elastic/react-search-ui-views": "1.7.0",
     "@elastic/search-ui": "1.7.0",
+    "antd": "^4.16.13",
     "blob-polyfill": "^6.0.20211015",
     "moment": "^2.24.0",
     "react": "^16.8.6",
